@@ -1,0 +1,55 @@
+version: "3"
+services:
+  react_app:
+    build:
+      context: ./react_app
+    volumes:
+      - ./react_app:/app
+    ports:
+      - "3000:3000"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: site_backend/Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  bot:
+    build:
+      context: ./backend
+      dockerfile: bot/Dockerfile
+    environment:
+      TOKEN: ${TG_TOKEN}
+    volumes:
+      - ./backend/bot:/app
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+
+  rabbit:
+    image: rabbitmq:3.7.4
+    ports:
+     - "5672:5672"
+
+  db:
+    build:
+      context: ./backend
+      dockerfile: db/Dockerfile
+    ports:
+      - "5432:5432"
+
+  nginx:
+    build:
+      context: ./backend
+      dockerfile: nginx/Dockerfile
+    ports:
+      - "8079:8079"
+    depends_on:
+      - react_app
+
+volumes:
+  pgdata:
