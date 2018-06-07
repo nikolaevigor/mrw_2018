@@ -4,7 +4,7 @@ services:
     build:
       context: ./react_app
     volumes:
-      - ./react_app:/app
+      - ./react_app/src:/app/src
     ports:
       - "3000:3000"
 
